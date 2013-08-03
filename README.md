@@ -39,50 +39,50 @@ still do a lot within these confines, though, so don't get discouraged if you ha
 
 Since our receiver is so tiny I'm just going to go ahead and show you the whole source and then make comments:
 
-        <html>
-          <head>
+    <html>
+        <head>
             <link rel="stylesheet" type="text/css" href="../css/receiver.css" />
-          </head>
-        <body>
-          <div class="messages">
+        </head>
+    <body>
+        <div class="messages">
             <h1>Waiting for Messages...</h1>
-          </div>
-        </body>
-        <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-        <script src="https://www.gstatic.com/cast/js/receiver/1.0/cast_receiver.js"></script>
-        <script src="messageTypes.js"></script>
-        <script>
-        	$(function() {
-        		var receiver = new cast.receiver.Receiver('*** YOUR APP ID ****', ['*** YOUR NAMESPACE ***']),
+        </div>
+    </body>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="https://www.gstatic.com/cast/js/receiver/1.0/cast_receiver.js"></script>
+    <script src="messageTypes.js"></script>
+    <script>
+        $(function() {
+            var receiver = new cast.receiver.Receiver('*** YOUR APP ID ****', ['*** YOUR NAMESPACE ***']),
                 channelHandler = new cast.receiver.ChannelHandler('*** YOUR NAMESPACE ***'),
                 $messages = $('.messages');
-        		
-        		channelHandler.addChannelFactory(
-        			receiver.createChannelFactory('*** YOUR NAMESPACE ***'));
-        
-        		receiver.start();
-        
-        		channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, onMessage.bind(this));
-        
-        		function onMessage(event) {
-        			$messages.html(event.message.type);
-        		}
-        	});
-        </script>
-        </html>
+    		
+            channelHandler.addChannelFactory(
+                receiver.createChannelFactory('*** YOUR NAMESPACE ***'));
+                
+            receiver.start();
+            
+            channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, onMessage.bind(this));
+            
+            function onMessage(event) {
+                $messages.html(event.message.type);
+            }
+        });
+    </script>
+    </html>
         
 Not so bad, right? Let's break it down. The html chunk should be pretty familiar to you:
 
-        <html>
-          <head>
+    <html>
+        <head>
             <link rel="stylesheet" type="text/css" href="../css/receiver.css" />
-          </head>
+        </head>
         <body>
-          <div class="messages">
+        <div class="messages">
             <h1>Waiting for Messages...</h1>
-          </div>
+        </div>
         </body>
-        ...
+    ...
         
 This just sets up where we're going to actually be displaying our content. I did some simple css too. You can look at the
 finished code on Github if you're intersted.
@@ -93,9 +93,9 @@ make sure you don't leave it out! Otherwise, your app isn't going to work at all
 And then we have our script. Right away you start to see some garbage that mentions `cast`. As you might have guessed, this
 is our first Receiver API call:
 
-        ...
-        var receiver = new cast.receiver.Receiver('*** YOUR APP ID ****', ['*** YOUR NAMESPACE ***']),
-        ...
+    ...
+    var receiver = new cast.receiver.Receiver('*** YOUR APP ID ****', ['*** YOUR NAMESPACE ***']),
+    ...
 
 This creates a new `Receiver` object. This is what we'll be using to facilitate ways of communicating with the client and device.
 Oh, and remember when we whitelisted our device? The e-mail you got should have contained your Application ID. That needs
@@ -104,9 +104,9 @@ the application you're creating. For this tutorial we can use something like `He
 clash with other namespaces, though, as this is how your Receiver will know what type of messages to listen to
 and how your Sender will know what type of messages to send. More on that later...or right now:
 
-        ...
-        channelHandler = new cast.receiver.ChannelHandler('*** YOUR NAMESPACE ***'),
-        ...
+    ...
+    channelHandler = new cast.receiver.ChannelHandler('*** YOUR NAMESPACE ***'),
+    ...
         
 This little guy, as you might have guessed, is what handles our `Channels`. A `Channel` in this context is used to send
 and receive simple JSON messages to and from the Sender application. The `ChannelHandler` allows us to hook into the events that
@@ -118,10 +118,10 @@ messages coming from that namespace.
 The next line is just there to keep track of our messages div so we can swap out the text later. Following that we create our
 `ChannelFactory`:
 
-        ...
-        channelHandler.addChannelFactory(
-          receiver.createChannelFactory('*** YOUR NAMESPACE ***'));
-        ...
+    ...
+    channelHandler.addChannelFactory(
+        receiver.createChannelFactory('*** YOUR NAMESPACE ***'));
+    ...
         
 That namespace again! Just fill it in like before. Here we're adding to our `ChannelHandler` a `ChannelFactory`. Like I said
 eariler, this is how `Channels` actually get created. We use the `Receiver` to create the `ChannelFactory`.
@@ -129,15 +129,15 @@ eariler, this is how `Channels` actually get created. We use the `Receiver` to c
 Great! We've got our `Receiver` and our `ChannelHandler` all set up! Does it work yet? Just a little bit more! First we need
 to tell the receiver to start listening to the world:
 
-        ...
-        receiver.start();
-        ...
+    ...
+    receiver.start();
+    ...
         
 Then we make sure our `ChannelHandler` is listening for `MesssageEvents`:
 
-        ...
-        channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, onMessage.bind(this));
-        ...
+    ...
+    channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, onMessage.bind(this));
+    ...
         
 The second parameter, as you should know from your Javascript training, just delegates the `onMessage` function as our callback
 when we hear a `MessageEvent` and binds `this` as our context. `Channels` do have other types of events. We can also listen
@@ -145,13 +145,18 @@ for when the `Channel` is opened, closed, or when it has an error. For this tuto
 
 Last, we actually do something with the `MessageEvent`:
 
-        ...
-        function onMessage(event) {
-          $messages.html(event.message.type);
-        }
-        ...
+    ...
+    function onMessage(event) {
+        $messages.html(event.message.type);
+    }
+    ...
         
 These `MessageEvents` have several parameters, but the thing that actually gets sent from the Sender application is the
 `message` object, which is generally going to be represented as JSON. You'll see in the next section that we basically
 define that JSON to look however we want. So there you go. Your first Receiver app! Now let's make a Sender to do
 something with it!
+
+## Sender ##
+
+Now let's whip up a Sender so our Receiver can actually do something! As with before I'll put the whole source up front and then
+break it down:

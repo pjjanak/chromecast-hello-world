@@ -79,9 +79,9 @@ Not so bad, right? Let's break it down. The HTML chunk should be pretty familiar
             <link rel="stylesheet" type="text/css" href="../css/receiver.css" />
         </head>
         <body>
-        <div class="messages">
-            <h1>Waiting for Messages...</h1>
-        </div>
+            <div class="messages">
+                <h1>Waiting for Messages...</h1>
+            </div>
         </body>
     ...
         

@@ -29,9 +29,10 @@ To start off with, we're going to go ahead and create our receiver app.
 
 ## The Receiver ##
 
-For both the receiver and the sender app I use a little bit of jQuery. I'm just going on the assumptiong that you understand
-it, as well as basic HTML, CSS, and Javascript. If not, you may want to start reseraching and learning those first. Having
-that base knowledge is important for being able to create useful Chromecast apps.
+For both the receiver and the sender app I use a little bit of [jQuery](http://jquery.com/). I'm just going on the
+assumptiong that you understand it, as well as basic HTML, CSS, and Javascript. If not, you may want to start
+reseraching and learning those first. Having that base knowledge is important for being able to create useful
+Chromecast apps.
 
 So, one thing to remember is that all Receiver applications are written in HTML5/CSS/Javascript. For some, this might seem
 awesome, and for others it might seem limited. Just remember what Chromecast is supposed to be: a media digester. You can
@@ -158,5 +159,221 @@ something with it!
 
 ## Sender ##
 
-Now let's whip up a Sender so our Receiver can actually do something! As with before I'll put the whole source up front and then
-break it down:
+Before we get started writing the sender app, it'd be good to mention that you'll probably want some way of running a
+web server on your local machine. Without it you can't really test this. For pretty much any platform,
+I suggest [Mongoose](https://code.google.com/p/mongoose/). It's a stupid easy web server. You just drop the executable
+into any directory you want to host, and launch it. You'll be able to access to the folder from `localhost:8080`.
+
+Now let's whip up a Sender so our Receiver can actually do something! This one is a little longer, so I won't paste in the whole
+source. See my Github page for that.
+
+First we have our HTML portion:
+
+    <html data-cast-api-enabled="true">
+    <head>
+        <title>Hello World Chrome Sender</title>
+        <link rel="stylesheet" type="text/css" href="../css/sender.css" />
+    </head>
+    <body>
+        <div class="receiver-div">
+            <h3>Choose A Receiver</h3>
+            <ul class="receiver-list">
+                <li>Looking for receivers...</li>
+            </ul>
+        </div>
+        <button class="kill" disabled>Kill the Connection</button>
+    </body>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    ...
+
+Something you might notice is that we aren't importing any scripts for the Sender API. That's because this is handled by 
+two things. You should remember way back when we were whitelisting our receiver that we also whitelisted `localhost`
+in the Chromecast Extension for Chrome. This basically tells the extension that on the `localhost` domain we are allowing
+the extension to inject the Sender API into any page. However, it won't just inject it all willy nilly. Our sender pages
+require this line:
+
+    <html data-cast-api-enabled="true">
+    ...
+
+to tell the extension that we want the API injected on this page. Make sure you don't forget it!
+
+Everything else in the HTML section should be pretty clear. We have a container which will list out all the receivers that
+get found and a button to disconnect from the receiver. We import jQuery and [Underscore](http://underscorejs.org)...sorry
+I snuck that one in there. If you don't know about Underscore, you should check it out. It's a really great little
+'functional' library for Javascript. I only use it for one thing here and I'll describe what's happening when we get there.
+
+I've also done a little styling for this page, which you can look at on the Github. Moving right along, we'll jump into our
+script. We declare our variables and then add some odd looking listener to our `window` object:
+
+    var cast_api,
+        cv_activity,
+        receiverList,
+        $killSwitch = $('.kill');
+        
+        window.addEventListener('message', function(event) {
+            if (event.source === window && event.data &&
+                    event.data.source === 'CastApi' &&
+                    event.data.event === 'Hello') {
+                initializeApi();
+            }
+        });
+    ...
+    
+The event listener isn't too crazy. One of the consequences of the way the Sender API gets injected into our pages is that
+we don't really have any control over when it happens. But, the Google Devs were smart and gave us a way of finding out
+exactly when we can start interacting with it. After the Sender API is loaded, it emits a `MessageEvent` to tell us so.
+So, we listen for this event. The if block checks to make sure the contents of the `MessageEvent` match what we're looking
+for. As per Google's docs, this event looks like this:
+
+    {
+        source: 'CastApi',
+        event: 'Hello',
+        api_version: [x, y]
+    }
+
+The version number basically lets our Sender decide if it's compatible with this version of the API. Besides that, we
+just make sure that the data in the `MessageEvent` matches the source and event described. Then we initialize our API:
+
+    ...
+    initializeApi = function() {
+        if (!cast_api) {
+            cast_api = new cast.Api();
+            cast_api.addReceiverListener('*** YOUR APP ID ****', onReceiverList);
+        }
+    };
+    ...
+
+I've added a check in here which makes sure we aren't calling this if we all ready have an API. So, we create a new `CastApi`
+object and attach a `ReceiverListener` to it. This will simply tell the `CastApi` that there are receivers which are listening
+for our...what's that? Oh our App Id!
+
+Bet you were wondering when that'd show up. In case you hadn't figured it out by now, the way this whole App Id business 
+works is Google registers your device to listen for your App Id when you whitelist it. That App Id is tied to 
+a particular website (the one you supplied when you whitelisted your device). This is how the Receiver knows 
+which URL to hit when it gets a launch request...but now we're getting ahead of ourselves.
+
+The second parameter to `addReceiverListener` is what callback to use when we get a list of valid receivers. Which brings
+us to...
+
+    ...
+    onReceiverList = function(list) {
+        if (list.length > 0) {
+            receiverList = list;
+            $('.receiver-list').empty();
+            receiverList.forEach(function(receiver) {
+                $listItem = $('<li><a href="#" data-id="' + receiver.id + '" />' + receiver.name + '</a></li>');
+                $listItem.on('click', receiverClicked);
+                $('.receiver-list').append($listItem);
+            });
+        }
+    };
+    ...
+    
+According to Google's documentation the `ReceiverListener` fires at least once, regardless of if it's found anything, once
+you register it. So, we start with a check to make sure we actually have receivers. Then we just take that list and
+dump it out in our receiver list element. We store the id of the receiver in a data attribute on the anchor tag so we can
+reference it later. Then we attach click handlers to the list items:
+
+    ...
+    receiverClicked = function(e) {
+        e.preventDefault();
+        
+        var $target = $('input[type="checkbox"]:checked'),
+            receiver = _.find(receiverList, function(receiver) {
+                return receiver.id === $target.data('id');
+            });
+        
+        doLaunch(receiver);
+    };
+    ...
+    
+This isn't too out there...all standard Javascript/jQuery. This is where I end up using Underscore: `_.find(receiverList...`.
+It should be pretty easy to figure out what's going on there. Underscore has a find function that takes two parameters:
+the list you want to try to find something in, and a function to execute on each item in the list. `find` works by looping
+through the list until the supplied function returns true. In our case, this is when we have found the receiver whose
+id matches that of the link we clicked. Simple enough. After we've found the right receiver, we launch our application
+on it:
+
+    ...
+    doLaunch = function(receiver) {
+        if (!cv_activity) {
+            var request = new cast.LaunchRequest('*** YOUR APP ID ***', receiver);
+            
+            $killSwitch.prop('disabled', false);
+            
+            cast_api.launch(request, onLaunch);
+        }
+    };
+    ...
+    
+First we check to make sure we don't already have an `Activity` launched on the receiver. While nothing bad would happen if
+we tried to launch another activity before closing out the first, I figured I'd put that check in there. As long
+as that passes, we use the Cast API and create a `LaunchRequest`. There's that App Id again. Like I said
+before, this is how your receiver knows which URL to launch. We also pass in which receiver the `LaunchRequest` should
+go to. We then enable our kill switch and finally send our `LaunchRequest` to the receiver. The second parameter of the
+`launch` function is the callback function for when the launch is succesful.
+
+At this point if you just added an empty `onLaunch` function, had your receiver hosted, and were running a server on your
+local machine, you'd be able to open up this page in your browser, click on the link to your receiver, and your app should
+launch. Exciting, right? We'll just add a couple more things to show off some other interactions with the receiver. First,
+that `onLaunch` function:
+
+    ...
+    onLaunch = function(activity) {
+        if (activity.status === 'running') {
+            cv_activity = activity;
+            
+            cast_api.sendMessage(cv_activity.activityId, '*** YOUR NAMESPACE ***', {type: 'HelloWorld'});
+        }
+    };
+    ...
+    
+Once our application gets launched on the receiver, why don't we say something to it? First we check the `ActivityStatus`
+that we got back from the `launch` function from before is in the running state. You can think of the `ActivityStatus`
+as representing what our connection to the receiver is doing. It also contains the `id` of the `Activity`, which we use
+to communicate with the recevier, as you can see in the next line.
+
+Here we use the `Cast API` to send a message to our receiver. This function is one of two types of interactions you
+can have with your receiver, and as far as I can tell, it isn't even documented! The other deals with `MediaRequests`,
+but that's getting out of scope of this tutorial.
+
+The first parameter to the `sendMessage`, again, is that `Activity` id. The second parameter is your namespace. If you
+think way back to the receiver section of the tutorial, you'll remember that this is how the receiver knows which
+messages to actually listen to. If you defined your namespace as `HelloWorld` use that here. Otherwise, just use
+whatever you had before. Last we actually have the object which represents our message. You can literally put
+whatever you want in here; it's just a freeform JSON object. For now we'll just include a `type` attribute and 
+say this is a `HelloWorld` type message.
+
+So, now if you reloaded your sender application and clicked on your receiver link you should see the placeholder text
+'Waiting for messages...' change to 'HelloWorld' on your TV. Hey! Look at that! We made our TV do something!
+
+Just one more thing to do and then the tutorial is over. Hooray! Let's add a click handler that will actually end
+our session with the receiver:
+
+    ...
+    $killSwitch.on('click', function() {
+        cast_api.stopActivity(cv_activity.activityId, function(){
+            cv_activity = null;
+        
+            $killSwitch.prop('disabled', true);
+        });
+    });
+    ...
+    
+This one is pretty straight forward. When we click on the kill switch, we call `stopActivity` on the `Cast API`. This does
+exactly what it sounds like. We pass it the `Activity` id from our active activity and it tells the receiver we're done.
+The second parameter is just a callback function for when the receiver tells us it successfully closed the app. When
+that's done we null out our activity, so we can start a new one if we want, and disable the kill switch.
+
+That's it! If you reload your sender you should now be able to
+
+1.  Launch your activity on your receiver
+2.  Observe the text on your TV changing
+3.  Close out the application
+4.  Rinse and repeat
+
+Look at that! Your first end to end Chromecast app! Go forth and be merry and show all your friends that you can control
+your TV with a web browser...but maybe do something a little more interesting with the app first. The sky is the limit now!
+
+# Closing Thoughts #

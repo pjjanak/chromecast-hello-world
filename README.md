@@ -139,7 +139,7 @@ Then we make sure our `ChannelHandler` is listening for `MesssageEvents`:
         channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, onMessage.bind(this));
         ...
         
-The second paramter, as you should know from your Javascript training, just delegates the `onMessage` function as our callback
+The second parameter, as you should know from your Javascript training, just delegates the `onMessage` function as our callback
 when we hear a `MessageEvent` and binds `this` as our context. `Channels` do have other types of events. We can also listen
 for when the `Channel` is opened, closed, or when it has an error. For this tutorial we'll just stick with messages, though.
 

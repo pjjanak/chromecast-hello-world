@@ -72,7 +72,7 @@ Since our receiver is so tiny I'm just going to go ahead and show you the whole 
     </script>
     </html>
         
-Not so bad, right? Let's break it down. The html chunk should be pretty familiar to you:
+Not so bad, right? Let's break it down. The HTML chunk should be pretty familiar to you:
 
     <html>
         <head>

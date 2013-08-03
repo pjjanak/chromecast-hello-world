@@ -3,11 +3,11 @@
 NB: The source for the finished product created using this tutorial can be found [here](http://github.com/pjjanak/chromecast-hello-world)
 
 Yesterday I set out on a treck to start writing my first Chromecast app. What I found was a woefully incomplete amount
-of documentation via Google and several disaparate little projects that other developers had worked on. While the
-task was not insurmountable because of this, I thought why not just write up a simple Hello World with commentary
-to make any would be Chromecast Dev's life easier. So, that's what this is: a barebones sender and receiver to help you
-understand how this all fits together. For now, I only have a Chrome sender. Soon I'll probably work on the equivalent for
-Android. But, let's get started!
+of [documentation](https://developers.google.com/cast/) via Google and several disaparate little projects that other
+developers had worked on. While the task was not insurmountable because of this, I thought why not just write up a simple
+Hello World with commentary to make any would be Chromecast Dev's life easier. So, that's what this is: a barebones
+sender and receiver to help you understand how this all fits together. For now, I only have a Chrome sender. Soon I'll
+probably work on the equivalent for Android. But, let's get started!
 
 # Get Yourself Whitelisted #
 
@@ -377,3 +377,16 @@ Look at that! Your first end to end Chromecast app! Go forth and be merry and sh
 your TV with a web browser...but maybe do something a little more interesting with the app first. The sky is the limit now!
 
 # Closing Thoughts #
+
+I hope this has been useful for you. But this is only the tip of the iceberg...well maybe not iceberg. This device certainly
+doesn't do everything, but it isn't supposed to. Really the depth from this device is going to be in the interesting
+HTML5 apps people make that work with this thing. The interaction with the device itself, as you can see, is pretty simple.
+It's just figuring out how to use the interaction model to make cool, useful apps.
+
+However, this tutorial does not cover the other half of development on the Chromecast: media. There is a whole section of 
+the API for the sender and receiver which covers media interaction, from playing/pausing to volume control. The same
+principles we've talked about here apply, but the functions and objects you use are a little different in some places.
+Perhaps in a future tutorial I'll cover that stuff. For now you should be able to muddle through the documentation
+Google has provided.
+
+Thanks for reading!

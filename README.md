@@ -113,7 +113,7 @@ This little guy, as you might have guessed, is what handles our `Channels`. A `C
 and receive simple JSON messages to and from the Sender application. The `ChannelHandler` allows us to hook into the events that
 occur on the various `Channels` that get created as the application is being used. It also delegates to
 a `ChannelFactory` (which you'll see a little later) to create new `Channels`. Again,  note the namespace. Make sure
-you use the same on that you defined earlier on the `Receiver`. This tells our `ChannelHandler` to only worry about
+you use the same one that you defined earlier on in the `Receiver`. This tells our `ChannelHandler` to only worry about
 messages coming from that namespace.
 
 The next line is just there to keep track of our messages div so we can swap out the text later. Following that we create our
@@ -162,7 +162,7 @@ something with it!
 Before we get started writing the sender app, it'd be good to mention that you'll probably want some way of running a
 web server on your local machine. Without it you can't really test this. For pretty much any platform,
 I suggest [Mongoose](https://code.google.com/p/mongoose/). It's a stupid easy web server. You just drop the executable
-into any directory you want to host, and launch it. You'll be able to access to the folder from `localhost:8080`.
+into any directory you want to host, and launch it. You'll be able to access the folder from `localhost:8080`.
 
 Now let's whip up a Sender so our Receiver can actually do something! This one is a little longer, so I won't paste in the whole
 source. See my Github page for that.

@@ -30,7 +30,7 @@ To start off with, we're going to go ahead and create our receiver app.
 ## The Receiver ##
 
 For both the receiver and the sender app I use a little bit of [jQuery](http://jquery.com/). I'm just going on the
-assumptiong that you understand it, as well as basic HTML, CSS, and Javascript. If not, you may want to start
+assumption that you understand it, as well as basic HTML, CSS, and Javascript. If not, you may want to start
 reseraching and learning those first. Having that base knowledge is important for being able to create useful
 Chromecast apps.
 

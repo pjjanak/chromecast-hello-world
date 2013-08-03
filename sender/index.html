@@ -49,6 +49,17 @@
 			}
 		};
 
+		receiverClicked = function(e) {
+			e.preventDefault();
+
+			var $target = $('input[type="checkbox"]:checked'),
+				receiver = _.find(receiverList, function(receiver) {
+					return receiver.id === $target.data('id');
+				});
+
+			doLaunch(receiver);
+		};
+
 		doLaunch = function(receiver) {
 			if (!cv_activity) {
 				var request = new cast.LaunchRequest('*** YOUR APP ID ***', receiver);
@@ -66,23 +77,13 @@
 				cast_api.sendMessage(cv_activity.activityId, '*** YOUR NAMESPACE ***', {type: 'HelloWorld'});
 			}
 		};
-		
-		receiverClicked = function(e) {
-			e.preventDefault();
-
-			var $target = $('input[type="checkbox"]:checked'),
-				receiver = _.find(receiverList, function(receiver) {
-					return receiver.id === $target.data('id');
-				});
-
-			doLaunch(receiver);
-		};
 
 		$killSwitch.on('click', function() {
-			cast_api.stopActivity(cv_activity.activityId, function(){});
-			cv_activity = null;
+			cast_api.stopActivity(cv_activity.activityId, function(){
+				cv_activity = null;
 			
-			$killSwitch.prop('disabled', true);
+				$killSwitch.prop('disabled', true);
+			});
 		});
 	</script>
 </html>

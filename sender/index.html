@@ -33,7 +33,7 @@
 		initializeApi = function() {
 			if (!cast_api) {
 				cast_api = new cast.Api();
-				cast_api.addReceiverListener('*** YOUR APP ID ****', onReceiverList);
+				cast_api.addReceiverListener('*** YOUR APP ID HERE ***', onReceiverList);
 			}
 		};
 
@@ -42,7 +42,7 @@
 				receiverList = list;
 				$('.receiver-list').empty();
 				receiverList.forEach(function(receiver) {
-					$listItem = $('<li><a href="#" data-id="' + receiver.id + '" />' + receiver.name + '</a></li>');
+					$listItem = $('<li><a href="#" data-id="' + receiver.id + '">' + receiver.name + '</a></li>');
 					$listItem.on('click', receiverClicked);
 					$('.receiver-list').append($listItem);
 				});
@@ -52,7 +52,7 @@
 		receiverClicked = function(e) {
 			e.preventDefault();
 
-			var $target = $('input[type="checkbox"]:checked'),
+			var $target = $(e.target),
 				receiver = _.find(receiverList, function(receiver) {
 					return receiver.id === $target.data('id');
 				});
@@ -62,7 +62,7 @@
 
 		doLaunch = function(receiver) {
 			if (!cv_activity) {
-				var request = new cast.LaunchRequest('*** YOUR APP ID ***', receiver);
+				var request = new cast.LaunchRequest('*** YOUR APP ID HERE ***', receiver);
 
 				$killSwitch.prop('disabled', false);
 
@@ -74,7 +74,7 @@
 			if (activity.status === 'running') {
 				cv_activity = activity;
 				
-				cast_api.sendMessage(cv_activity.activityId, '*** YOUR NAMESPACE ***', {type: 'HelloWorld'});
+				cast_api.sendMessage(cv_activity.activityId, '*** YOUR NAMESPACE HERE ***', {type: 'HelloWorld'});
 			}
 		};
 

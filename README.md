@@ -262,7 +262,7 @@ us to...
             receiverList = list;
             $('.receiver-list').empty();
             receiverList.forEach(function(receiver) {
-                $listItem = $('<li><a href="#" data-id="' + receiver.id + '" />' + receiver.name + '</a></li>');
+                $listItem = $('<li><a href="#" data-id="' + receiver.id + '">' + receiver.name + '</a></li>');
                 $listItem.on('click', receiverClicked);
                 $('.receiver-list').append($listItem);
             });
@@ -279,7 +279,7 @@ reference it later. Then we attach click handlers to the list items:
     receiverClicked = function(e) {
         e.preventDefault();
         
-        var $target = $('input[type="checkbox"]:checked'),
+        var $target = $(e.target),
             receiver = _.find(receiverList, function(receiver) {
                 return receiver.id === $target.data('id');
             });

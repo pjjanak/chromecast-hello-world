@@ -3,11 +3,11 @@
 NB: The source for the finished product created using this tutorial can be found [here](http://github.com/pjjanak/chromecast-hello-world)
 
 Yesterday I set out on a treck to start writing my first Chromecast app. What I found was a woefully incomplete amount
-of documentation via Google and several disaparate little projects that other developers had worked on. While the
-task was not insurmountable because of this, I thought why not just write up a simple Hello World with commentary
-to make any would be Chromecast Dev's life easier. So, that's what this is: a barebones sender and receiver to help you
-understand how this all fits together. For now, I only have a Chrome sender. Soon I'll probably work on the equivalent for
-Android. But, let's get started!
+of [documentation](https://developers.google.com/cast/) via Google and several disaparate little projects that other
+developers had worked on. While the task was not insurmountable because of this, I thought why not just write up a simple
+Hello World with commentary to make any would be Chromecast Dev's life easier. So, that's what this is: a barebones
+sender and receiver to help you understand how this all fits together. For now, I only have a Chrome sender. Soon I'll
+probably work on the equivalent for Android. But, let's get started!
 
 # Get Yourself Whitelisted #
 
@@ -30,8 +30,8 @@ To start off with, we're going to go ahead and create our receiver app.
 ## The Receiver ##
 
 For both the receiver and the sender app I use a little bit of [jQuery](http://jquery.com/). I'm just going on the
-assumptiong that you understand it, as well as basic HTML, CSS, and Javascript. If not, you may want to start
-reseraching and learning those first. Having that base knowledge is important for being able to create useful
+assumption that you understand it, as well as basic HTML, CSS, and Javascript. If not, you may want to start
+researching and learning those first. Having that base knowledge is important for being able to create useful
 Chromecast apps.
 
 So, one thing to remember is that all Receiver applications are written in HTML5/CSS/Javascript. For some, this might seem
@@ -72,16 +72,16 @@ Since our receiver is so tiny I'm just going to go ahead and show you the whole 
     </script>
     </html>
         
-Not so bad, right? Let's break it down. The html chunk should be pretty familiar to you:
+Not so bad, right? Let's break it down. The HTML chunk should be pretty familiar to you:
 
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="../css/receiver.css" />
         </head>
         <body>
-        <div class="messages">
-            <h1>Waiting for Messages...</h1>
-        </div>
+            <div class="messages">
+                <h1>Waiting for Messages...</h1>
+            </div>
         </body>
     ...
         
@@ -113,7 +113,7 @@ This little guy, as you might have guessed, is what handles our `Channels`. A `C
 and receive simple JSON messages to and from the Sender application. The `ChannelHandler` allows us to hook into the events that
 occur on the various `Channels` that get created as the application is being used. It also delegates to
 a `ChannelFactory` (which you'll see a little later) to create new `Channels`. Again,  note the namespace. Make sure
-you use the same on that you defined earlier on the `Receiver`. This tells our `ChannelHandler` to only worry about
+you use the same one that you defined earlier on in the `Receiver`. This tells our `ChannelHandler` to only worry about
 messages coming from that namespace.
 
 The next line is just there to keep track of our messages div so we can swap out the text later. Following that we create our
@@ -162,7 +162,7 @@ something with it!
 Before we get started writing the sender app, it'd be good to mention that you'll probably want some way of running a
 web server on your local machine. Without it you can't really test this. For pretty much any platform,
 I suggest [Mongoose](https://code.google.com/p/mongoose/). It's a stupid easy web server. You just drop the executable
-into any directory you want to host, and launch it. You'll be able to access to the folder from `localhost:8080`.
+into any directory you want to host, and launch it. You'll be able to access the folder from `localhost:8080`.
 
 Now let's whip up a Sender so our Receiver can actually do something! This one is a little longer, so I won't paste in the whole
 source. See my Github page for that.
@@ -377,3 +377,16 @@ Look at that! Your first end to end Chromecast app! Go forth and be merry and sh
 your TV with a web browser...but maybe do something a little more interesting with the app first. The sky is the limit now!
 
 # Closing Thoughts #
+
+I hope this has been useful for you. But this is only the tip of the iceberg...well maybe not iceberg. This device certainly
+doesn't do everything, but it isn't supposed to. Really the depth from this device is going to be in the interesting
+HTML5 apps people make that work with this thing. The interaction with the device itself, as you can see, is pretty simple.
+It's just figuring out how to use the interaction model to make cool, useful apps.
+
+However, this tutorial does not cover the other half of development on the Chromecast: media. There is a whole section of 
+the API for the sender and receiver which covers media interaction, from playing/pausing to volume control. The same
+principles we've talked about here apply, but the functions and objects you use are a little different in some places.
+Perhaps in a future tutorial I'll cover that stuff. For now you should be able to muddle through the documentation
+Google has provided.
+
+Thanks for reading!

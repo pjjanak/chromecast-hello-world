@@ -17,6 +17,14 @@ to hear a response. One thing to mention is that to start Chromecast development
 somewhere. Github has free pages hosting, but in the long run that would be a little limited. So, look into your
 options and make the decision that works best for you right now.
 
+An important note: The URL you give Google has to be the _exact_ location of your receiver app's index.html. If
+you were to clone this repo and upload it to your server (say `http://mydomain.com`) then the receiver would be located
+at `http://mydomain.com/receiver`. You would have to specify that as your URL when whitelisting. Alternatively, if you
+just dumped the receiver app at the root directory of your domain, meaning it would found at `http://mydomain.com`, then
+you would supply that URL. The way the process works now does not have any support for subdirectories. So you have to
+make sure you're specific. Also, if you rename the receiver app from `index.html` to anything else, you'll have to 
+specify that in the URL (e.g. `http://mydomain.com/receiver/sweetapp.html`).
+
 Also, while you're waiting for this you might as well follow the second set of steps on that page and whitelist `localhost`
 in the Chromecast extension.
 

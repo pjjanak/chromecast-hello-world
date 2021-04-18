@@ -1,3 +1,5 @@
+# NOTE: This is for the cast api v1, which is not supported any more. Don't expect any of this to work.
+
 # What's This? #
 
 NB: The source for the finished product created using this tutorial can be found [here](http://github.com/pjjanak/chromecast-hello-world)
